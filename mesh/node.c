@@ -37,7 +37,6 @@
 #include <glib.h>
 
 #include "src/shared/util.h"
-#include "src/shared/shell.h"
 #include "gdbus/gdbus.h"
 #include "mesh/mesh-net.h"
 #include "mesh/config-model.h"
@@ -47,6 +46,7 @@
 #include "mesh/net.h"
 #include "mesh/prov-db.h"
 #include "mesh/util.h"
+#include "mesh/socket.h"
 
 struct mesh_model {
 	struct mesh_model_ops cbs;

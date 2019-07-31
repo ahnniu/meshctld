@@ -45,6 +45,7 @@
 #include "lib/uuid.h"
 #include "src/shared/shell.h"
 #include "src/shared/util.h"
+#include "src/shared/mainloop.h"
 #include "gdbus/gdbus.h"
 #include "mesh/mesh-net.h"
 #include "mesh/gatt.h"
@@ -58,13 +59,15 @@
 #include "mesh/prov-db.h"
 #include "mesh/config-model.h"
 #include "mesh/onoff-model.h"
+#include "mesh/socket.h"
+#include "mesh/cmds.h"
 
 /* String display constants */
-#define COLORED_NEW	COLOR_GREEN "NEW" COLOR_OFF
-#define COLORED_CHG	COLOR_YELLOW "CHG" COLOR_OFF
-#define COLORED_DEL	COLOR_RED "DEL" COLOR_OFF
+#define COLORED_NEW	 "NEW"
+#define COLORED_CHG	 "CHG"
+#define COLORED_DEL		 "DEL"
 
-#define PROMPT_ON	COLOR_BLUE "[meshctl]" COLOR_OFF "# "
+#define PROMPT_ON	 "[meshctl]"  "# "
 #define PROMPT_OFF	"Waiting to connect to bluetoothd..."
 
 #define MESH_PROV_DATA_IN_UUID_STR	"00002adb-0000-1000-8000-00805f9b34fb"
@@ -97,7 +100,6 @@ static char *mesh_local_config_filename;
 static bool discovering = false;
 static bool discover_mesh;
 static uint16_t prov_net_key_index = NET_IDX_PRIMARY;
-static const struct bt_shell_menu main_menu;
 
 #define CONN_TYPE_NETWORK	0x00
 #define CONN_TYPE_IDENTITY	0x01
@@ -182,15 +184,11 @@ static void proxy_leak(gpointer data)
 
 static void connect_handler(DBusConnection *connection, void *user_data)
 {
-	bt_shell_set_prompt(PROMPT_ON);
+
 }
 
 static void disconnect_handler(DBusConnection *connection, void *user_data)
 {
-	bt_shell_detach();
-
-	bt_shell_set_prompt(PROMPT_OFF);
-
 	g_list_free_full(ctrl_list, proxy_leak);
 	ctrl_list = NULL;
 
@@ -613,17 +611,16 @@ static void set_connected_device(GDBusProxy *proxy)
 			goto done;
 
 	dbus_message_iter_get_basic(&iter, &desc);
-	desc = g_strdup_printf(COLOR_BLUE "[%s%s%s]" COLOR_OFF "# ", desc,
+	desc = g_strdup_printf("[%s%s%s]"  "# ", desc,
 			       (desc && mesh) ? "-" : "",
 				mesh ? buf : "");
 
 done:
-	bt_shell_set_prompt(desc ? desc : PROMPT_ON);
 	g_free(desc);
 
 	/* If disconnected, return to main menu */
 	if (proxy == NULL)
-		bt_shell_set_menu(&main_menu);
+		;
 }
 
 static void connect_reply(DBusMessage *message, void *user_data)
@@ -1851,9 +1848,7 @@ static void cmd_print_mesh(int argc, char *argv[])
 	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
-static const struct bt_shell_menu main_menu = {
-	.name = "main",
-	.entries = {
+const struct cmds_entry main_cmds[] = {
 	{ "list",         NULL,       cmd_list, "List available controllers"},
 	{ "show",         "[ctrl]",   cmd_show, "Controller information"},
 	{ "select",       "<ctrl>",   cmd_select, "Select default controller"},
@@ -1870,35 +1865,17 @@ static const struct bt_shell_menu main_menu = {
 	{ "mesh-info",    NULL,       cmd_print_mesh,
 					"Mesh networkinfo (provisioner)" },
 	{ "local-info",    NULL,      cmd_print_local, "Local mesh node info" },
-	{ } },
+	{ }
 };
 
 static const char *mesh_config_dir;
 
-static const struct option options[] = {
-	{ "config",	required_argument, 0, 'c' },
-	{ 0, 0, 0, 0 }
-};
+static const char *config_dir;
 
-static const char **optargs[] = {
-	&mesh_config_dir
-};
-
-static const char *help[] = {
-	"Read local mesh config JSON files from <directory>"
-};
-
-static const struct bt_shell_opt opt = {
-	.options = options,
-	.optno = sizeof(options) / sizeof(struct option),
-	.optstr = "c:",
-	.optarg = optargs,
-	.help = help,
-};
 
 static void client_ready(GDBusClient *client, void *user_data)
 {
-	bt_shell_attach(fileno(stdin));
+
 }
 
 int main(int argc, char *argv[])
@@ -1908,9 +1885,8 @@ int main(int argc, char *argv[])
 	int len;
 	int extra;
 
-	bt_shell_init(argc, argv, &opt);
-	bt_shell_set_menu(&main_menu);
-	bt_shell_set_prompt(PROMPT_OFF);
+	mainloop_init();
+	socket_service_init();
 
 	if (!mesh_config_dir) {
 		bt_shell_printf("Local config directory not provided.\n");
@@ -1990,7 +1966,7 @@ int main(int argc, char *argv[])
 	if (!onoff_client_init(PRIMARY_ELEMENT_IDX))
 		g_printerr("Failed to initialize mesh generic On/Off client\n");
 
-	status = bt_shell_run();
+	status = mainloop_run();
 
 	g_dbus_client_unref(client);
 
@@ -2005,6 +1981,5 @@ int main(int argc, char *argv[])
 	return status;
 
 fail:
-	bt_shell_cleanup();
 	return EXIT_FAILURE;
 }

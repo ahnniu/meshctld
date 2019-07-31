@@ -34,9 +34,9 @@
 
 #include <lib/bluetooth.h>
 
-#include "src/shared/shell.h"
 #include "mesh/util.h"
 #include "mesh/agent.h"
+#include "mesh/socket.h"
 
 struct input_request {
 	oob_type_t type;
@@ -130,7 +130,6 @@ static uint32_t power_ten(uint8_t power)
 static bool request_decimal(uint16_t len)
 {
 	bt_shell_printf("Request decimal key (0 - %d)\n", power_ten(len) - 1);
-	bt_shell_prompt_input("mesh", "Enter Numeric key:", response_decimal, NULL);
 
 	return true;
 }
@@ -177,6 +176,7 @@ bool agent_input_request(oob_type_t type, uint16_t max_len, agent_input_cb cb,
 		pending_request.cb = cb;
 		pending_request.user_data = user_data;
 
+		response_decimal("1234",NULL);
 		return true;
 	}
 
@@ -203,5 +203,4 @@ void agent_output_request_cancel(void)
 	if (pending_request.type != OUTPUT)
 		return;
 	pending_request.type = NONE;
-	bt_shell_release_prompt("");
 }

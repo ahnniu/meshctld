@@ -47,6 +47,7 @@
 #include "mesh/prov-db.h"
 #include "mesh/util.h"
 #include "mesh/onoff-model.h"
+#include "mesh/cmds.h"
 
 static uint8_t trans_id;
 static uint16_t onoff_app_idx = APP_IDX_INVALID;
@@ -267,17 +268,14 @@ static void cmd_set(int argc, char *argv[])
 	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
-static const struct bt_shell_menu onoff_menu = {
-	.name = "onoff",
-	.desc = "On/Off Model Submenu",
-	.entries = {
+const struct cmds_entry onoff_cmds[] = {
 	{"target",		"<unicast>",			cmd_set_node,
 						"Set node to configure"},
 	{"get",			NULL,				cmd_get_status,
 						"Get ON/OFF status"},
 	{"onoff",		"<0/1>",			cmd_set,
 						"Send \"SET ON/OFF\" command"},
-	{} },
+	{}
 };
 
 static struct mesh_model_ops client_cbs = {
@@ -293,7 +291,6 @@ bool onoff_client_init(uint8_t ele)
 					&client_cbs, NULL))
 		return false;
 
-	bt_shell_add_submenu(&onoff_menu);
 
 	return true;
 }

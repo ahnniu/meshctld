@@ -37,7 +37,6 @@
 
 #include <glib.h>
 
-#include "src/shared/shell.h"
 #include "src/shared/util.h"
 #include "mesh/mesh-net.h"
 #include "mesh/keys.h"
@@ -46,6 +45,8 @@
 #include "mesh/prov-db.h"
 #include "mesh/util.h"
 #include "mesh/config-model.h"
+#include "mesh/socket.h"
+#include "mesh/cmds.h"
 
 #define MIN_COMPOSITION_LEN 16
 
@@ -1178,10 +1179,7 @@ static void cmd_node_reset(int argc, char *argv[])
 	cmd_default(OP_NODE_RESET);
 }
 
-static const struct bt_shell_menu cfg_menu = {
-	.name = "config",
-	.desc = "Configuration Model Submenu",
-	.entries = {
+const struct cmds_entry cfg_cmds[] = {
 	{"target",		"<unicast>",		cmd_node_set,
 						"Set target node to configure"},
 	{"composition-get",	"[page_num]",		cmd_composition_get,
@@ -1239,7 +1237,7 @@ static const struct bt_shell_menu cfg_menu = {
 				cmd_sub_get,    "Get subscription"},
 	{"node-reset",		NULL,                    cmd_node_reset,
 				"Reset a node and remove it from network"},
-	{} },
+	{}
 };
 
 void config_client_get_composition(uint32_t dst)
@@ -1265,7 +1263,6 @@ bool config_client_init(void)
 						&client_cbs, NULL))
 		return false;
 
-	bt_shell_add_submenu(&cfg_menu);
 
 	return true;
 }

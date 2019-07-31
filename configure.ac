@@ -66,6 +66,16 @@ PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.28, dummy=yes,
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
+PKG_CHECK_MODULES(GOBJ, gobject-2.0 >= 2.0, dummy=yes,
+                               AC_MSG_ERROR(GOBJ >= 2.0 is required))
+AC_SUBST(GOBJ_CFLAGS)
+AC_SUBST(GOBJ_LIBS)
+
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.0, dummy=yes,
+                               AC_MSG_ERROR(GTK >= 2.0 is required))
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+
 if (test "${enable_threads}" = "yes"); then
 	AC_DEFINE(NEED_THREADS, 1, [Define if threading support is required])
 	PKG_CHECK_MODULES(GTHREAD, gthread-2.0 >= 2.16, dummy=yes,

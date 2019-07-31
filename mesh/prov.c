@@ -38,7 +38,6 @@
 
 #include "src/shared/util.h"
 #include "src/shared/ecc.h"
-#include "src/shared/shell.h"
 
 #include "gdbus/gdbus.h"
 #include "mesh/node.h"
@@ -49,6 +48,7 @@
 #include "mesh/agent.h"
 #include "mesh/prov.h"
 #include "mesh/net.h"
+#include "mesh/socket.h"
 
 /* Provisioning Security Levels */
 #define MESH_PROV_SEC_HIGH	2

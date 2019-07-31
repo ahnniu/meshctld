@@ -31,19 +31,19 @@
 
 #include <glib.h>
 
-#include "src/shared/shell.h"
 #include "src/shared/util.h"
 #include "mesh/mesh-net.h"
 #include "mesh/node.h"
 #include "mesh/util.h"
+#include "mesh/socket.h"
+
 
 void set_menu_prompt(const char *name, const char *id)
 {
 	char *prompt;
 
-	prompt = g_strdup_printf(COLOR_BLUE "[%s%s%s]" COLOR_OFF "# ", name,
+	prompt = g_strdup_printf("[%s%s%s]" "# ", name,
 					id ? ": Target = " : "", id ? id : "");
-	bt_shell_set_prompt(prompt);
 	g_free(prompt);
 }
 

@@ -36,7 +36,6 @@
 #include <glib.h>
 
 #include "src/shared/io.h"
-#include "src/shared/shell.h"
 #include "gdbus/gdbus.h"
 #include "lib/bluetooth.h"
 #include "lib/uuid.h"
@@ -45,6 +44,7 @@
 #include "mesh/gatt.h"
 #include "mesh/prov.h"
 #include "mesh/net.h"
+#include "mesh/socket.h"
 
 #define MESH_PROV_DATA_OUT_UUID_STR	"00002adc-0000-1000-8000-00805f9b34fb"
 #define MESH_PROXY_DATA_OUT_UUID_STR	"00002ade-0000-1000-8000-00805f9b34fb"

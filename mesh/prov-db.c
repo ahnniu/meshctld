@@ -40,7 +40,6 @@
 #include <glib.h>
 
 #include "src/shared/util.h"
-#include "src/shared/shell.h"
 
 #include "mesh/mesh-net.h"
 #include "mesh/crypto.h"
@@ -49,6 +48,7 @@
 #include "mesh/node.h"
 #include "mesh/util.h"
 #include "mesh/prov-db.h"
+#include "mesh/socket.h"
 
 #define CHECK_KEY_IDX_RANGE(x) (((x) >= 0) && ((x) <= 4095))
 

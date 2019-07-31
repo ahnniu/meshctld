@@ -33,7 +33,6 @@
 #include <glib.h>
 
 #include "src/shared/util.h"
-#include "src/shared/shell.h"
 
 #include "mesh/crypto.h"
 #include "mesh/gatt.h"
@@ -43,6 +42,7 @@
 #include "mesh/node.h"
 #include "mesh/prov-db.h"
 #include "mesh/net.h"
+#include "mesh/socket.h"
 
 struct address_range
 {
